@@ -51,3 +51,24 @@ if uploaded_file:
             st.success("Hoàn thành batch!")
 
 st.info("Tính năng gửi lời mời đang dùng cookies. Cần API Zalo đầy đủ để ổn định.")
+def send_friend_request(phone, cookies, proxy=None):
+    headers = {
+        "Cookie": "; ".join([f"{k}={v}" for k,v in cookies.items()]),
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "Content-Type": "application/json"
+    }
+    
+    payload = {
+        "phone": phone,
+        "message": "Chào bạn, kết bạn nhé!"
+    }
+    
+    try:
+        r = requests.post("https://chat.zalo.me/api/social/friend/add", 
+                         json=payload, headers=headers, proxies={"http": proxy, "https": proxy} if proxy else None)
+        if r.status_code == 200:
+            return "Thành công"
+        else:
+            return f"Lỗi {r.status_code}"
+    except:
+        return "Lỗi kết nối"
