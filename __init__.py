@@ -1,0 +1,1 @@
+# rona-friend-tool package

@@ -1,0 +1,9 @@
+typer[all]
+streamlit
+pydantic
+pandas
+openpyxl
+requests
+python-dotenv
+selenium
+webdriver-manager
