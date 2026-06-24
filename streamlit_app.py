@@ -15,7 +15,7 @@ st.header("🔑 Đăng nhập Zalo bằng QR Code Thật")
 
 if st.button("Tạo QR Code Login Zalo"):
     with st.spinner("Đang lấy QR Code từ Zalo..."):
-        qr_url = "https://qr.zalo.me/qr?type=login"
+        qr_url = "https://id.zalo.me/qr?type=login"
         st.image(qr_url, caption="📱 Quét QR bằng Zalo App trên điện thoại", use_column_width=True)
         st.success("QR Code đã tạo! Quét ngay để login.")
         
