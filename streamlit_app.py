@@ -72,3 +72,54 @@ def send_friend_request(phone, cookies, proxy=None):
             return f"Lỗi {r.status_code}"
     except:
         return "Lỗi kết nối"
+        import streamlit as st
+import json
+import time
+from datetime import datetime
+
+st.set_page_config(page_title="Rona Friend Tool", layout="wide")
+
+st.title("🚀 Rona Friend Tool - Login QR Zalo")
+
+if "accounts" not in st.session_state:
+    st.session_state.accounts = []
+
+tab1, tab2 = st.tabs(["🔑 Login QR Zalo", "📤 Kết bạn"])
+
+with tab1:
+    st.subheader("Quét QR để Login Zalo")
+    
+    # Giả lập QR (thay bằng API thật sau)
+    qr_placeholder = st.empty()
+    status_placeholder = st.empty()
+    
+    if st.button("Tạo QR Login Mới"):
+        with st.spinner("Đang tạo QR Code..."):
+            time.sleep(2)
+            qr_placeholder.image("https://via.placeholder.com/350x350?text=Zalo+QR+Login", use_column_width=True)
+            status_placeholder.info("Mở Zalo App → Quét QR để login")
+            
+            # Giả lập login thành công sau 10s (thay bằng poll API thật)
+            time.sleep(5)
+            acc_name = f"Zalo Account {len(st.session_state.accounts)+1}"
+            st.session_state.accounts.append({
+                "name": acc_name,
+                "status": "✅ Đã login QR",
+                "login_time": datetime.now().strftime("%H:%M")
+            })
+            st.success(f"Login {acc_name} thành công qua QR!")
+
+    st.write("### Tài khoản đã login")
+    for acc in st.session_state.accounts:
+        st.success(acc["name"] + " - " + acc["status"])
+
+with tab2:
+    st.subheader("Gửi lời mời")
+    uploaded = st.file_uploader("Upload TXT SDT", type="txt")
+    if uploaded and st.session_state.accounts:
+        phones = [line.strip() for line in uploaded.getvalue().decode().splitlines() if line.strip()]
+        st.success(f"Load {len(phones)} số")
+        if st.button("🚀 Bắt đầu gửi lời mời"):
+            st.info("Đang gửi bằng tài khoản đã login...")
+
+st.caption("Tính năng QR đang giả lập. Cần API Zalo để tự động thật 100%.")
