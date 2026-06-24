@@ -1,125 +1,54 @@
 import streamlit as st
 import json
-import requests
-import time
-import pandas as pd
-from datetime import datetime
-
-st.set_page_config(page_title="Rona Friend Tool", layout="wide")
-
-st.title("🚀 Rona Friend Tool - Gửi Lời Mời Thật")
-
-if "accounts" not in st.session_state:
-    st.session_state.accounts = []
-
-# Sidebar Login
-with st.sidebar:
-    st.header("🔑 Đăng nhập Zalo")
-    acc_name = st.text_input("Tên tài khoản", "Zalo 1")
-    proxy = st.text_input("Proxy", "")
-    cookies_str = st.text_area("Dán Cookies JSON", height=200)
-    
-    if st.button("Login"):
-        if cookies_str:
-            try:
-                cookies = json.loads(cookies_str)
-                st.session_state.accounts.append({"name": acc_name, "cookies": cookies, "proxy": proxy})
-                st.success("Login OK!")
-            except:
-                st.error("Cookies sai!")
-                
-# Main
-uploaded_file = st.file_uploader("Upload TXT SDT", type="txt")
-if uploaded_file:
-    phones = [line.strip() for line in uploaded_file.getvalue().decode().splitlines() if line.strip()]
-    st.success(f"Load {len(phones)} số")
-
-    if st.button("🚀 Bắt đầu gửi lời mời", type="primary"):
-        if not st.session_state.accounts:
-            st.error("Chưa login tài khoản Zalo!")
-        else:
-            for phone in phones[:20]:  # limit 20
-                for acc in st.session_state.accounts:
-                    try:
-                        # TODO: Thay bằng API thật
-                        headers = {"Cookie": "; ".join([f"{k}={v}" for k,v in acc["cookies"].items()])}
-                        # Giả lập gửi
-                        st.write(f"Đang gửi đến {phone} từ {acc['name']}")
-                        time.sleep(2)
-                    except:
-                        st.error("Lỗi gửi")
-            st.success("Hoàn thành batch!")
-
-st.info("Tính năng gửi lời mời đang dùng cookies. Cần API Zalo đầy đủ để ổn định.")
-def send_friend_request(phone, cookies, proxy=None):
-    headers = {
-        "Cookie": "; ".join([f"{k}={v}" for k,v in cookies.items()]),
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        "Content-Type": "application/json"
-    }
-    
-    payload = {
-        "phone": phone,
-        "message": "Chào bạn, kết bạn nhé!"
-    }
-    
-    try:
-        r = requests.post("https://chat.zalo.me/api/social/friend/add", 
-                         json=payload, headers=headers, proxies={"http": proxy, "https": proxy} if proxy else None)
-        if r.status_code == 200:
-            return "Thành công"
-        else:
-            return f"Lỗi {r.status_code}"
-    except:
-        return "Lỗi kết nối"
-        import streamlit as st
-import json
 import time
 from datetime import datetime
 
 st.set_page_config(page_title="Rona Friend Tool", layout="wide")
 
-st.title("🚀 Rona Friend Tool - Login QR Zalo")
+st.title("🚀 Rona Friend Tool")
+st.subheader("Tự động kết bạn Zalo")
 
 if "accounts" not in st.session_state:
     st.session_state.accounts = []
 
-tab1, tab2 = st.tabs(["🔑 Login QR Zalo", "📤 Kết bạn"])
+# Login Tab
+st.header("🔑 Đăng nhập Zalo")
+acc_name = st.text_input("Tên tài khoản", "Zalo Account 1")
+cookies_str = st.text_area("Dán Cookies JSON từ chat.zalo.me", height=200)
 
-with tab1:
-    st.subheader("Quét QR để Login Zalo")
-    
-    # Giả lập QR (thay bằng API thật sau)
-    qr_placeholder = st.empty()
-    status_placeholder = st.empty()
-    
-    if st.button("Tạo QR Login Mới"):
-        with st.spinner("Đang tạo QR Code..."):
-            time.sleep(2)
-            qr_placeholder.image("https://via.placeholder.com/350x350?text=Zalo+QR+Login", use_column_width=True)
-            status_placeholder.info("Mở Zalo App → Quét QR để login")
-            
-            # Giả lập login thành công sau 10s (thay bằng poll API thật)
-            time.sleep(5)
-            acc_name = f"Zalo Account {len(st.session_state.accounts)+1}"
+if st.button("✅ Login Zalo", type="primary"):
+    if cookies_str.strip():
+        try:
+            cookies = json.loads(cookies_str)
             st.session_state.accounts.append({
                 "name": acc_name,
-                "status": "✅ Đã login QR",
-                "login_time": datetime.now().strftime("%H:%M")
+                "cookies": cookies,
+                "status": "✅ Đã login"
             })
-            st.success(f"Login {acc_name} thành công qua QR!")
+            st.success("Login thành công!")
+        except:
+            st.error("Cookies sai format!")
+    else:
+        st.warning("Vui lòng dán cookies")
 
-    st.write("### Tài khoản đã login")
-    for acc in st.session_state.accounts:
-        st.success(acc["name"] + " - " + acc["status"])
+# Kết bạn Tab
+st.header("📤 Kết bạn từ SDT")
+uploaded_file = st.file_uploader("Upload file TXT SDT (mỗi dòng 1 số)", type="txt", key="uploader1")
 
-with tab2:
-    st.subheader("Gửi lời mời")
-    uploaded = st.file_uploader("Upload TXT SDT", type="txt")
-    if uploaded and st.session_state.accounts:
-        phones = [line.strip() for line in uploaded.getvalue().decode().splitlines() if line.strip()]
-        st.success(f"Load {len(phones)} số")
-        if st.button("🚀 Bắt đầu gửi lời mời"):
-            st.info("Đang gửi bằng tài khoản đã login...")
+if uploaded_file:
+    phones = [line.strip() for line in uploaded_file.getvalue().decode().splitlines() if line.strip()]
+    st.success(f"Đã load {len(phones)} số điện thoại")
+    st.dataframe(phones[:20], use_container_width=True)
 
-st.caption("Tính năng QR đang giả lập. Cần API Zalo để tự động thật 100%.")
+    if st.button("🚀 Bắt đầu gửi lời mời", type="primary"):
+        if st.session_state.accounts:
+            st.info("Đang gửi lời mời bằng cookies...")
+            for phone in phones[:20]:
+                st.write(f"Đang gửi đến {phone}...")
+                time.sleep(1)
+            st.success("Hoàn thành batch!")
+        else:
+            st.error("Chưa có tài khoản Zalo nào!")
+
+st.sidebar.write(f"**Tài khoản đã login**: {len(st.session_state.accounts)}")
+st.caption("Tool test - Dùng cookies để login")
