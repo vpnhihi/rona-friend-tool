@@ -1,11 +1,22 @@
 import streamlit as st
+import pandas as pd
+from datetime import datetime
 
 st.title("🚀 Rona Friend Tool")
-st.write("Công cụ tự động kết bạn Zalo - Đang phát triển")
+st.subheader("Tự động kết bạn từ SDT - Zalo")
 
-st.subheader("Tính năng sắp có")
-st.write("- Import danh sách SDT")
-st.write("- Gửi lời mời kết bạn")
-st.write("- Quản lý campaign")
+st.write("Phiên bản test - Đang hoàn thiện")
 
-st.info("Tool đang trong quá trình hoàn thiện. Liên hệ dev để cập nhật!")
+uploaded_file = st.file_uploader("Upload file Excel/CSV danh sách SDT", type=["xlsx", "csv"])
+
+if uploaded_file:
+    if uploaded_file.name.endswith('.csv'):
+        df = pd.read_csv(uploaded_file)
+    else:
+        df = pd.read_excel(uploaded_file)
+    st.success(f"Đã load {len(df)} số điện thoại!")
+    st.dataframe(df.head())
+
+st.button("Bắt đầu gửi lời mời", type="primary")
+
+st.info("Tool đang trong giai đoạn test. Contact dev để thêm tính năng đầy đủ.")
