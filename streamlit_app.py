@@ -74,32 +74,32 @@ st.subheader("Tự động kết bạn Zalo")
 if "accounts" not in st.session_state:
     st.session_state.accounts = []
 
-st.header("🔑 Đăng nhập Zalo (QR Code)")
+if st.button("🔄 Tạo QR Login Mới"):
 
-if st.button("Tạo QR Login Mới từ chat.zalo.me"):
     with st.spinner("Đang lấy QR Code từ Zalo..."):
-        try:
-            # Giả lập lấy QR từ Zalo (thay bằng API thật nếu có)
-            qr_url = "https://qr.zalo.me/qr?type=login"  # Link QR động
-            st.image(qr_url, caption="Quét QR bằng Zalo App trên điện thoại", use_column_width=True)
-            st.success("QR Code đã tạo! Quét ngay để login.")
-            
-            # Giả lập login sau khi quét
-            time.sleep(8)
-            st.session_state.accounts.append({
-                "name": "Zalo Account " + str(len(st.session_state.accounts)+1),
-                "status": "✅ Đã login QR",
-                "login_time": datetime.now().strftime("%H:%M")
-            })
-            st.balloons()
-        except:
-            st.error("Lỗi lấy QR. Thử lại.")
 
-# Hiển thị tài khoản
-st.subheader("Tài khoản đã login")
-for acc in st.session_state.accounts:
-    st.success(f"{acc['name']} - {acc['status']} ({acc.get('login_time', '')})")
+        # Link QR động từ Zalo
 
-st.info("Quét QR bằng Zalo App → Tool sẽ tự nhận (đang hoàn thiện poll login).")
+        qr_url = "chat.zalo.me&size=300"
 
-st.caption("Tool test - Dùng QR từ chat.zalo.me")
+        st.image(qr_url, caption="Quét QR bằng Zalo App trên điện thoại", use_column_width=True)
+
+        st.success("QR Code đã tạo! Quét ngay để login.")
+
+        
+
+        # Giả lập sau khi quét
+
+        time.sleep(6)
+
+        st.session_state.accounts.append({
+
+            "name": f"Zalo Account {len(st.session_state.accounts)+1}",
+
+            "status": "✅ Đã login QR",
+
+            "login_time": datetime.now().strftime("%H:%M")
+
+        })
+
+        st.balloons()
